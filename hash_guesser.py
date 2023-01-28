@@ -12,16 +12,18 @@ class HashGuesser:
         self.hashed_password = None
         self.cracked_password = None
         self.hashing_type = None
-        self.tries = None
+        self.tries = 0
         self.time_taken = None
 
     def __str__(self):
-        return f'"{self.username}" is using "{self.hashing_type}" hashing algorithm.\n' \
-               f'The guessed password is {self.cracked_password}'
+        return f'\n"{self.username}" is using the "{self.hashing_type}" hashing algorithm.\n' \
+               f'Cracked Password: "{self.cracked_password}"\n' \
+               f'Number of trials: {self.tries}\n' \
+               f'Time taken: {self.time_taken:.2f} (seconds)'
 
     def crack_hash(self, char_list, n, empty_list=[]):
         guess = crypt.crypt(''.join(empty_list), self.hashed_password)
-
+        self.tries += 1
         if guess == self.hashed_password:
             self.cracked_password = ''.join(empty_list)
 

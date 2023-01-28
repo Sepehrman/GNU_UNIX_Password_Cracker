@@ -1,6 +1,9 @@
 import argparse
 import string
+import time
 import warnings
+from datetime import datetime
+
 from request import Request
 from hash_guesser import HashGuesser
 
@@ -19,8 +22,12 @@ def define_arguments():
     request.file = args.file
     request.users = args.users
 
+    if (len(request.users) < 1 or request.users is None) and request.file is None:
+        print("Must include the following argument -f/--file and must include usernames")
+        quit()
+
     if len(request.users) < 1 or request.users is None:
-        print("Must include usernames")
+        print("Must include username(s)")
         quit()
 
     if request.file is None:
@@ -57,9 +64,6 @@ def find_lines_from_user(req: Request, username):
         print(f'Exception: {e}')
 
 
-# def start_guessing(guesses):
-
-
 def find_lines(request, hashed_lines):
     for user in request.users:
         found = find_lines_from_user(request, user)
@@ -73,14 +77,17 @@ def generate_guessers(hashed_lines, guessers):
 
 
 def start_cracking(guessers : list[HashGuesser]):
-
+    print("----------------RESULTS----------------")
     letters_length = 1
     for hash_guesser in guessers:
+        start = time.time()
         while hash_guesser.cracked_password is None:
             hash_guesser.crack_hash(list(string.ascii_letters), letters_length)
             letters_length += 1
+        elapsed = time.time()
+        hash_guesser.time_taken = elapsed - start
         letters_length = 1
-
+        print(hash_guesser)
 
 
 def main():
