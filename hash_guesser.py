@@ -16,10 +16,10 @@ class HashGuesser:
         self.time_taken = None
 
     def __str__(self):
-        return f'\n"{self.username}" is using the "{self.hashing_type}" hashing algorithm.\n' \
+        return f'"{self.username}" is using the "{self.hashing_type}" hashing algorithm.\n' \
                f'Cracked Password: "{self.cracked_password}"\n' \
                f'Number of trials: {self.tries}\n' \
-               f'Time taken: {self.time_taken:.2f} (seconds)'
+               f'Time taken: {self.time_taken:.2f} (seconds)\n'
 
     def crack_hash(self, char_list, n, empty_list=[]):
         guess = crypt.crypt(''.join(empty_list), self.hashed_password)

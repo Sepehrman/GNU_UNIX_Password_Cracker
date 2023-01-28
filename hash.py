@@ -15,7 +15,7 @@ with warnings.catch_warnings():
 def define_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--file', help='The shadow file we want to crack the password of.')
-    parser.add_argument('users', nargs='*')
+    parser.add_argument('users', nargs='*', help="Argument with no flag that is a list of usernames")
 
     request = Request()
     args = parser.parse_args()
@@ -54,14 +54,12 @@ def extract_etc_shadow(hashed_line):
 
 
 def find_lines_from_user(req: Request, username):
-    try:
-        with open(req.file, "r") as file:
-            lines = file.readlines()
-            for line in lines:
-                if line.startswith(username):
-                    return line
-    except Exception as e:
-        print(f'Exception: {e}')
+    with open(req.file, "r") as file:
+        lines = file.readlines()
+        for line in lines:
+            if line.startswith(username):
+                return line
+    print(f"*** Warning: '{username}' is not associated with this file. Cannot crack password. ***")
 
 
 def find_lines(request, hashed_lines):
@@ -69,6 +67,10 @@ def find_lines(request, hashed_lines):
         found = find_lines_from_user(request, user)
         if found:
             hashed_lines.append(found)
+    if len(hashed_lines) == 0:
+        print("!!! Error: None of the usernames provided are available within the shadow file. Please check the "
+              "usernames. !!!")
+        quit()
 
 
 def generate_guessers(hashed_lines, guessers):
@@ -77,6 +79,7 @@ def generate_guessers(hashed_lines, guessers):
 
 
 def start_cracking(guessers : list[HashGuesser]):
+    print("Cracking Process initiated...\n")
     print("----------------RESULTS----------------")
     letters_length = 1
     for hash_guesser in guessers:
